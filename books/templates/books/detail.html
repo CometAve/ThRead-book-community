@@ -46,7 +46,7 @@
         </div>
         <div class="card-body">
           <blockquote class="blockquote mb-4 pb-3 border-bottom">
-            <p class="mb-0">{{ book.description }}</p>
+            <p class="mb-0">{{ book.description|linebreaks }}</p>
           </blockquote>
         
         {% if user.is_authenticated %}
