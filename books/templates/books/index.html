@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+  <header class="mb-5 text-center">
+    <h1 class="display-4 fw-bold text-success">문학의 숲으로</h1>
+    <p class="lead text-muted mb-0">지식과 상상의 세계로 당신을 초대합니다</p>
+  </header>
+
+  <!-- 필터링 및 검색 부분 -->
+  <div class="row mb-4">
+    <div class="col-md-8 offset-md-2">
+      <form id="searchForm" class="search-form">
+        <div class="input-group">
+          <input type="text" id="searchInput" class="form-control" placeholder="책 제목, 작가, 내용 검색..." name="query" value="{{ request.GET.query|default_if_none:'' }}">
+          <button class="btn btn-success" type="submit" id="searchButton">검색</button>
+          {% if request.GET.query %}
+            <a href="{% url 'books:index' %}" class="btn btn-outline-secondary ms-2" id="resetButton">
+              <i class="bi bi-x-circle"></i> 초기화
+            </a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 검색 결과 메시지 -->
+  <div id="searchResultMessage" class="mb-3 text-center {% if not request.GET.query %}d-none{% endif %}">
+    {% if request.GET.query %}
+      <p class="text-muted">
+        <span class="fw-bold">"{{ request.GET.query }}"</span>에 대한 검색결과: <span id="resultCount">{{ books|length }}</span>개의 도서
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- 도서 목록 또는 검색 결과 없음 메시지 -->
+  {% if books %}
+    <!-- 도서 목록 -->
+    <div id="bookList" class="row row-cols-1 row-cols-md-3 g-4">
+      {% for book in books %}
+      <div class="col book-item">
+        <div class="card book-card h-100 shadow-sm border-0">
+          {% if book.cover_image %}
+            <div class="position-relative overflow-hidden" style="height: 360px;">
+              <img 
+                src="{{ book.cover_image.url }}"            
+                class="card-img-top h-100 w-100"
+                style="object-fit: cover; transition: transform 0.3s;"
+                alt="{{ book.title }}"
+              />
+              <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white" 
+                  style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                <h5 class="card-title mb-0">{{ book.title }}</h5>
+                <p class="mb-0 small">{{ book.author }}</p>
+              </div>
+            </div>
+          {% else %}
+            <div class="bg-light text-center p-5">
+              <span class="text-muted">이미지가 없습니다</span>
+            </div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <!-- 책 내용 부분 - 고정된 높이로 설정하고 오버플로우시 숨김 처리 -->
+            <div class="book-description mb-3" style="height: 100px; overflow: hidden;">
+              <p class="card-text">
+                {{ book.description|truncatechars:100 }}
+              </p>
+            </div>
+            
+            <!-- 별점과 자세히 보기 버튼을 항상 하단에 위치시키기 위해 margin-top:auto 적용 -->
+            <div class="d-flex align-items-center mt-auto">
+              <div class="me-auto">
+                <div class="d-flex align-items-center">
+                  <div class="me-2">
+                    <span class="badge bg-success rounded-pill">{{ book.customer_review_rank }}</span>
+                  </div>
+                  <div class="rating">
+                    <!-- 별점 표시 간소화 -->
+                    {% for i in "12345" %}
+                      {% with star_position=forloop.counter|add:"0" %}
+                        {% if star_position <= book.customer_review_rank %}
+                          <small class="text-warning">★</small>
+                        {% elif star_position <= book.customer_review_rank|add:"0.5" %}
+                          <small class="text-warning">★</small>
+                        {% else %}
+                          <small class="text-secondary">☆</small>
+                        {% endif %}
+                      {% endwith %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <a href="{% url 'books:detail' book.pk %}" class="btn btn-sm btn-outline-success">자세히 보기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- 검색 결과 없음 메시지 (화면 중앙에 위치) -->
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 50vh;">
+      <div class="col-md-8 text-center">
+        <div class="alert alert-info p-5 shadow-sm">
+          <h4 class="alert-heading mb-3">
+            {% if request.GET.query %}
+              "{{ request.GET.query }}"에 대한 검색 결과가 없습니다
+            {% else %}
+              등록된 도서가 없습니다
+            {% endif %}
+          </h4>
+          <p class="mb-3">
+            {% if request.GET.query %}
+              다른 검색어로 다시 시도해보세요.
+            {% else %}
+              첫 번째 도서를 등록해보세요!
+            {% endif %}
+          </p>
+          <div class="mt-4">
+            {% if user.is_authenticated %}
+              <a href="{% url 'books:create' %}" class="btn btn-success px-4">도서 등록</a>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="btn btn-outline-success px-4">로그인하고 도서 등록</a>
+            {% endif %}
+            
+            {% if request.GET.query %}
+              <a href="{% url 'books:index' %}" class="btn btn-outline-secondary ms-2 px-4">모든 도서 보기</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  
+  <!-- 도서 등록 버튼 -->
+  {% if user.is_authenticated and books %}
+  <div class="d-flex justify-content-center mt-5">
+    <a href="{% url 'books:create' %}" class="btn btn-success btn-lg">
+      새 도서 등록
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- 카드 템플릿 (JavaScript로 동적 생성용) -->
+<template id="book-card-template">
+  <div class="col book-item">
+    <div class="card book-card h-100 shadow-sm border-0">
+      <div class="position-relative overflow-hidden cover-container" style="height: 360px;">
+        <img src="" class="card-img-top h-100 w-100" style="object-fit: cover; transition: transform 0.3s;" alt="">
+        <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+          <h5 class="card-title mb-0"></h5>
+          <p class="mb-0 small author-name"></p>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column">
+        <div class="book-description mb-3" style="height: 100px; overflow: hidden;">
+          <p class="card-text"></p>
+        </div>
+        <div class="d-flex align-items-center mt-auto">
+          <div class="me-auto">
+            <div class="d-flex align-items-center">
+              <div class="me-2">
+                <span class="badge bg-success rounded-pill review-rank"></span>
+              </div>
+              <div class="rating"></div>
+            </div>
+          </div>
+          <a href="#" class="btn btn-sm btn-outline-success detail-link">자세히 보기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- 이미지 없을 때 템플릿 -->
+<template id="no-image-template">
+  <div class="bg-light text-center p-5">
+    <span class="text-muted">이미지가 없습니다</span>
+  </div>
+</template>
+
+<!-- 검색 결과 없음 템플릿 (JavaScript용) -->
+<template id="empty-result-template">
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 50vh; width: 100%;">
+    <div class="col-md-8 text-center">
+      <div class="alert alert-info p-5 shadow-sm">
+        <h4 class="alert-heading mb-3"></h4>
+        <p class="mb-3">다른 검색어로 다시 시도해보세요.</p>
+        <div class="mt-4">
+          <button class="btn btn-outline-secondary px-4" id="resetSearchBtn">모든 도서 보기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  // URL 변수 정의 (JavaScript 파일에서 Django 템플릿 URL을 사용하기 위함)
+  const indexUrl = "{% url 'books:index' %}";
+</script>
+<script src="{% static 'books/js/book-search.js' %}"></script>
+{% endblock scripts %}

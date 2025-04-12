@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow">
+        <div class="card-header bg-success text-white py-3">
+          <h2 class="mb-0 text-center">도서 정보 수정</h2>
+          <p class="text-center mb-0 small text-white-50 mt-1">{{ book.title }}</p>
+        </div>
+        <div class="card-body p-4">
+          <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- 제목 필드 -->
+            <div class="mb-4">
+              <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">제목</label>
+              <input type="text" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}" class="form-control {% if form.title.errors %}is-invalid{% endif %}" value="{{ form.title.value|default_if_none:'' }}">
+              {% if form.title.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.title.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <!-- 작가 필드 -->
+            <div class="mb-4">
+              <label for="{{ form.author.id_for_label }}" class="form-label fw-bold">작가</label>
+              <input type="text" name="{{ form.author.html_name }}" id="{{ form.author.id_for_label }}" class="form-control {% if form.author.errors %}is-invalid{% endif %}" value="{{ form.author.value|default_if_none:'' }}">
+              {% if form.author.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.author.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+              <small class="form-text text-muted">작가 정보는 자동으로 검색되어 채워집니다.</small>
+            </div>
+            
+            <!-- 설명 필드 -->
+            <div class="mb-4">
+              <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">책 소개</label>
+              <textarea name="{{ form.description.html_name }}" id="{{ form.description.id_for_label }}" rows="5" class="form-control {% if form.description.errors %}is-invalid{% endif %}">{{ form.description.value|default_if_none:'' }}</textarea>
+              {% if form.description.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.description.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <!-- 평점 필드 -->
+            <div class="mb-4">
+              <label for="{{ form.customer_review_rank.id_for_label }}" class="form-label fw-bold">평점</label>
+              <div class="input-group">
+                <input type="number" min="1" max="5" name="{{ form.customer_review_rank.html_name }}" id="{{ form.customer_review_rank.id_for_label }}" class="form-control {% if form.customer_review_rank.errors %}is-invalid{% endif %}" value="{{ form.customer_review_rank.value|default_if_none:'' }}">
+                <span class="input-group-text">
+                  <i class="bi bi-star-fill text-warning"></i>
+                </span>
+              </div>
+              {% if form.customer_review_rank.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.customer_review_rank.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <!-- 표지 이미지 필드 -->
+            <div class="mb-4">
+              <label for="{{ form.cover_image.id_for_label }}" class="form-label fw-bold">책 표지</label>
+              {% if book.cover_image %}
+                <div class="mb-3">
+                  <div class="d-flex align-items-center">
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="img-thumbnail me-3" style="max-height: 100px;">
+                    <div>
+                      <p class="mb-1 text-muted small">현재 표지 이미지</p>
+                      <p class="mb-0 small text-muted">새 이미지를 선택하면 현재 이미지가 대체됩니다.</p>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              <div class="input-group">
+                <input type="file" name="{{ form.cover_image.html_name }}" id="{{ form.cover_image.id_for_label }}" class="form-control {% if form.cover_image.errors %}is-invalid{% endif %}">
+                <label class="input-group-text" for="{{ form.cover_image.id_for_label }}">
+                  <i class="bi bi-image"></i>
+                </label>
+              </div>
+              {% if form.cover_image.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.cover_image.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+                        
+            <!-- 버튼 그룹 -->
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+              <div>
+                <a href="{% url 'books:detail' book.pk %}" class="btn btn-outline-secondary">
+                  <i class="bi bi-arrow-left me-1"></i> 취소
+                </a>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-success px-4">
+                  <i class="bi bi-check-lg me-1"></i> 저장
+                </button>
+                <button type="button" class="btn btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                  <i class="bi bi-trash me-1"></i> 삭제
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">도서 삭제</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0"><strong>{{ book.title }}</strong> 도서를 정말 삭제하시겠습니까?</p>
+        <p class="text-danger small mb-0 mt-2">이 작업은 되돌릴 수 없습니다.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <form action="{% url 'books:delete' book.pk %}" method="POST" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">삭제</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
