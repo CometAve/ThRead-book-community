@@ -1,7 +1,7 @@
 # ThRead - 독서 커뮤니티 플랫폼
 
 <div align="center">
-  <img src="assets/데미안.jpg" alt="ThRead 대표 이미지" width="300">
+  <img src="assets/프로젝트 메인화면.png" alt="ThRead 대표 이미지" width="300">
   <p><i>Django 웹 프레임워크를 활용한 개인 학습 목적의 도서 커뮤니티 플랫폼</i></p>
 </div>
 
