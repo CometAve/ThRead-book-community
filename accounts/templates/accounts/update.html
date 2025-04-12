@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h2 class="mb-0 text-center">회원정보 수정</h2>
+        </div>
+        <div class="card-body p-4">
+          <form action="{% url "accounts:update" %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- 기본 정보 섹션 -->
+            <div class="mb-4">
+              <h4 class="mb-3 pb-2 border-bottom">기본 정보</h4>
+              
+              <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.username.id_for_label }}" class="form-label">아이디</label>
+                  <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" class="form-control" value="{{ form.username.value|default_if_none:'' }}">
+                  {% if form.username.errors %}
+                    <div class="text-danger small mt-1">
+                      {% for error in form.username.errors %}{{ error }}{% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.email.id_for_label }}" class="form-label">이메일</label>
+                  <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" class="form-control" value="{{ form.email.value|default_if_none:'' }}">
+                  {% if form.email.errors %}
+                    <div class="text-danger small mt-1">
+                      {% for error in form.email.errors %}{{ error }}{% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.first_name.id_for_label }}" class="form-label">이름</label>
+                  <input type="text" name="{{ form.first_name.html_name }}" id="{{ form.first_name.id_for_label }}" class="form-control" value="{{ form.first_name.value|default_if_none:'' }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.last_name.id_for_label }}" class="form-label">성</label>
+                  <input type="text" name="{{ form.last_name.html_name }}" id="{{ form.last_name.id_for_label }}" class="form-control" value="{{ form.last_name.value|default_if_none:'' }}">
+                </div>
+              </div>
+            </div>
+            
+            <!-- 개인 정보 섹션 -->
+            <div class="mb-4">
+              <h4 class="mb-3 pb-2 border-bottom">개인 정보</h4>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.gender.id_for_label }}" class="form-label">성별</label>
+                  <select name="{{ form.gender.name }}" id="{{ form.gender.id_for_label }}" class="form-select">
+                    {% for value, text in form.gender.field.choices %}
+                      <option value="{{ value }}" {% if form.gender.value == value %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.age.id_for_label }}" class="form-label">나이</label>
+                  <input type="number" name="{{ form.age.html_name }}" id="{{ form.age.id_for_label }}" class="form-control" value="{{ form.age.value|default_if_none:'' }}">
+                </div>
+              </div>
+            </div>
+            
+            <!-- 독서 정보 섹션 -->
+            <div class="mb-4">
+              <h4 class="mb-3 pb-2 border-bottom">독서 정보</h4>
+              
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.weekly_reading_hours.id_for_label }}" class="form-label">주간 평균 독서 시간</label>
+                  <div class="input-group">
+                    <input type="number" name="{{ form.weekly_reading_hours.html_name }}" id="{{ form.weekly_reading_hours.id_for_label }}" class="form-control" value="{{ form.weekly_reading_hours.value|default_if_none:'' }}">
+                    <span class="input-group-text">시간</span>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="{{ form.yearly_reading_count.id_for_label }}" class="form-label">연간 독서량</label>
+                  <div class="input-group">
+                    <input type="number" name="{{ form.yearly_reading_count.html_name }}" id="{{ form.yearly_reading_count.id_for_label }}" class="form-control" value="{{ form.yearly_reading_count.value|default_if_none:'' }}">
+                    <span class="input-group-text">권</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label">관심 장르</label>
+                <div class="card">
+                  <div class="card-body bg-light">
+                    <div class="row">
+                      {% for choice in form.interested_genres %}
+                        <div class="col-md-4 mb-2">
+                          <div class="form-check">
+                            <input type="checkbox" 
+                                  name="{{ form.interested_genres.name }}" 
+                                  value="{{ choice.data.value }}" 
+                                  id="id_interested_genres_{{ forloop.counter0 }}" 
+                                  class="form-check-input"
+                                  {% if choice.data.selected %}checked{% endif %}>
+                            <label class="form-check-label" for="id_interested_genres_{{ forloop.counter0 }}">{{ choice.choice_label }}</label>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 프로필 이미지 섹션 -->
+            <div class="mb-4">
+              <h4 class="mb-3 pb-2 border-bottom">프로필 이미지</h4>
+              
+              <div class="mb-3">
+                <label for="{{ form.profile_image.id_for_label }}" class="form-label">이미지 선택</label>
+                {% if user.profile_image %}
+                  <div class="mb-2">
+                    <img src="{{ user.profile_image.url }}" alt="프로필 이미지" class="img-thumbnail" style="max-width: 150px;">
+                  </div>
+                {% endif %}
+                <div class="input-group">
+                  <input type="file" name="{{ form.profile_image.html_name }}" id="{{ form.profile_image.id_for_label }}" class="form-control">
+                </div>
+                <div class="form-text small text-muted mt-1">새 이미지를 선택하면 기존 이미지가 변경됩니다.</div>
+              </div>
+            </div>
+            
+            <!-- 버튼 섹션 -->
+            <div class="d-flex justify-content-between mt-4 pt-2 border-top">
+              <div>
+                <a href="{% url 'accounts:profile' user.username %}" class="btn btn-outline-secondary">취소</a>
+                <a href="{% url "accounts:change_password" user.pk %}" class="btn btn-outline-warning">비밀번호 변경</a>
+              </div>
+              <button type="submit" class="btn btn-success">변경사항 저장</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
