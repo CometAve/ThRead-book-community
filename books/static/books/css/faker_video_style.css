@@ -1,0 +1,137 @@
+/**
+ * FAKER 도서 페이지 전용 스타일
+ * - YouTube 배경 영상 관련 스타일
+ * - 제어 버튼 스타일
+ * - FAKER 특별 테마 스타일
+ */
+
+/* YouTube 배경 스타일 */
+.youtube-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+}
+
+#youtubePlayer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* 영상 제어 버튼 스타일 */
+.video-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 2px solid #00ffaa;
+  color: #00ffaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.control-btn i {
+  font-size: 1.2rem;
+}
+
+/* 종료 버튼 스타일 */
+#exitFullModeBtn {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+}
+
+.exit-btn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 2px solid #00ffaa;
+  color: #00ffaa;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.exit-btn:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+  transform: scale(1.05);
+}
+
+/* FAKER 페이지 특별 스타일링 */
+.faker-theme .container.py-5 {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 30px;
+  color: #fff;
+}
+
+.faker-theme .card {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgb(76, 76, 76) !important;
+}
+
+.faker-theme .card-header,
+.faker-theme .card-body,
+.faker-theme .card-footer {
+  background-color: transparent !important;
+  color: #fff !important;
+}
+
+.faker-theme .text-muted {
+  color: #ccc !important;
+}
+
+.faker-theme .text-success {
+  color: #00ffaa !important;
+}
+
+.faker-theme .bg-success {
+  background-color: #00aa77 !important;
+}
+
+.faker-theme .bg-success.bg-opacity-10 {
+  background-color: rgba(0, 170, 119, 0.3) !important;
+}
+
+.faker-theme .btn-success {
+  background-color: #00aa77;
+  border-color: #00aa77;
+}
+
+.faker-theme .btn-outline-secondary {
+  color: #fff;
+  border-color: #fff;
+}
+
+.faker-theme .btn-outline-danger {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}

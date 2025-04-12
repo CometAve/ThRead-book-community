@@ -1,6 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if book.title == "FAKER" %}
+{% load static %}
+<!-- FAKER 전용 CSS 로드 -->
+<link rel="stylesheet" href="{% static 'books/css/faker_video_style.css' %}">
+
+<!-- FAKER 전용 배경 YouTube 영상 -->
+<div class="youtube-background" id="youtubeBackground">
+  <div id="youtubePlayer"></div>
+</div>
+
+<!-- 영상 제어 버튼 -->
+<div class="video-controls">
+  <button id="toggleMute" class="control-btn" title="소리 켜기/끄기">
+    <i class="bi bi-volume-mute-fill"></i>
+  </button>
+  <button id="togglePlay" class="control-btn" title="재생/정지">
+    <i class="bi bi-pause-fill"></i>
+  </button>
+  <button id="toggleCaptions" class="control-btn" title="자막 켜기/끄기">
+    <i class="bi bi-badge-cc-fill"></i>
+  </button>
+  <button id="toggleFullContentBtn" class="control-btn" title="영상 전체화면 모드">
+    <i class="bi bi-arrows-fullscreen"></i>
+  </button>
+</div>
+
+<!-- 전체화면 모드에서 나가기 버튼 -->
+<div id="exitFullModeBtn" style="display: none;">
+  <button class="exit-btn">
+    <i class="bi bi-fullscreen-exit"></i> 영상모드 종료
+  </button>
+</div>
+
+<!-- FAKER 테마 클래스 추가 -->
+<script>
+  document.body.classList.add('faker-theme');
+</script>
+
+<!-- FAKER 전용 JavaScript 로드 -->
+<script src="{% static 'books/js/faker_video_background.js' %}"></script>
+{% endif %}
+
 <div class="container py-5">
   <div class="row">
     <!-- 왼쪽: 책 표지 이미지 -->
